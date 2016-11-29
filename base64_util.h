@@ -14,16 +14,13 @@
  *  
  **/
 
-#ifndef  PS_SPIDER_APP_SPIDER_APP_TREE_BASE64_UTIL_H
-#define  PS_SPIDER_APP_SPIDER_APP_TREE_BASE64_UTIL_H
+#ifndef  COMMON_TOOLS_BASE64_UTIL_H
+#define  COMMON_TOOLS_BASE64_UTIL_H
 
 #include <string>
-#include "base/macros.h"
+#include <vector>
 
-namespace ps {
-namespace spider {
-namespace appspider {
-namespace apptree {
+namespace commontools {
 
 class Base64Util {
     public:
@@ -85,30 +82,28 @@ class Base64Util {
         static std::string decode(const char* buf, unsigned int len);
     
     private:
-        DISALLOW_COPY_AND_ASSIGN(Base64Util);
+        Base64Util(const Base64Util&);
+        Base64Util& operator = (const Base64Util&);
 
         /**
          * @brief 初始化Base64编解码所需的内部辅助数据
          *
-         * @return  void 
+         * @return  std::vector<int>
          * @retval   
          * @see 
          * @note 
          * @author wangyunfei01
          * @date 2016/02/24 20:16:07
         **/
-        static void init_inner_data();
+        static std::vector<int> init_inner_data();
 
     private:
         static const char* _s_alphabet;//Base64编解码的码表
-        static int* _s_to_int;
+        static std::vector<int> _s_to_int_vec;
 };
 
-} //apptree
-} //appspider
-} //spider
-} //ps
+} //commontools
 
-#endif  //PS_SPIDER_APP_SPIDER_APP_TREE_BASE64_H
+#endif  //COMMON_TOOLS_BASE64_H
 
 /* vim: set expandtab ts=4 sw=4 sts=4 tw=100: */

@@ -16,21 +16,17 @@
 
 #include "base64_util.h"
 #include <string.h>
+#include <iostream>
 
-namespace ps {
-namespace spider {
-namespace appspider {
-namespace apptree {
+namespace commontools {
 
 const char* Base64Util::_s_alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
                                        "abcdefghijklmnopqrstuvwxyz0123456789+/";
-int* Base64Util::_s_to_int = NULL;
+
+std::vector<int> Base64Util::_s_to_int_vec = Base64Util::init_inner_data();
 
 Base64Util::~Base64Util() {
-    if (_s_to_int != NULL) {
-        delete[] _s_to_int;
-        _s_to_int = NULL;
-    }
+
 }
 
 /**
@@ -47,13 +43,6 @@ std::string Base64Util::encode(const char* buf) {
 std::string Base64Util::encode(const char* buf, unsigned int len) {
     std::string base64str;
     
-    if (buf == NULL) {
-        return base64str;
-    }
-    if (_s_to_int == NULL) {
-        init_inner_data();
-    }
-
     int mask = 0x3F;
     unsigned int pos = 0;
     while (pos < len) {
@@ -91,10 +80,6 @@ std::string Base64Util::decode(const char* buf, unsigned int len) {
         return raw_str;
     }
 
-    if (_s_to_int == NULL) {
-        init_inner_data();
-    }
-
     int delta = 0;
     if (buf[len - 1] == '=') {
         delta = (buf[len -2] == '=')? 2 : 1;
@@ -103,37 +88,34 @@ std::string Base64Util::decode(const char* buf, unsigned int len) {
 
     int mask = 0xFF;
     for (unsigned int i = 0; i < len; i += 4) {
-        int c0 = _s_to_int[(int)buf[i]];
-        int c1 = _s_to_int[(int)buf[i + 1]];
+        int c0 = _s_to_int_vec[(int)buf[i]];
+        int c1 = _s_to_int_vec[(int)buf[i + 1]];
         raw_str += (char) (((c0 << 2) | (c1 >> 4)) & mask);
         if (raw_str.size() >= max_raw_str_len) {
             return raw_str;
         }
-        int c2 = _s_to_int[(int)buf[i + 2]];
+        int c2 = _s_to_int_vec[(int)buf[i + 2]];
         raw_str += (char) (((c1 << 4) | (c2 >> 2)) & mask);
         if (raw_str.size() >= max_raw_str_len) {
             return raw_str;
         }
-        int c3 = _s_to_int[(int)buf[i + 3]];
+        int c3 = _s_to_int_vec[(int)buf[i + 3]];
         raw_str += (char) (((c2 << 6) | c3) & mask);
     }
 
     return raw_str;
 }
 
-void Base64Util::init_inner_data() {
-    if (_s_to_int == NULL) {
-        _s_to_int = new int[128];
-    }
+std::vector<int> Base64Util::init_inner_data() {
+    std::vector<int> vec(128);
 
     for (size_t i = 0; i < strlen(_s_alphabet); ++i) {
-        *(_s_to_int + _s_alphabet[i]) = i;
+        vec.at(_s_alphabet[i]) = i;
     }
+
+    return vec;
 }
 
-} //apptree
-} //appspider
-} //spider
-} //ps
+} //commontools
 
 /* vim: set expandtab ts=4 sw=4 sts=4 tw=100: */
