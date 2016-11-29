@@ -16,7 +16,6 @@
 
 #include "base64_util.h"
 #include <string.h>
-#include <iostream>
 
 namespace commontools {
 
